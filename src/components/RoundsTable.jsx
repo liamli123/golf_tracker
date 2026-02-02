@@ -58,16 +58,16 @@ export default function RoundsTable({ rounds, onDelete }) {
                 <td className="px-6 py-4 text-sm text-gray-300">
                   {round.course}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-right">
-                  ¥{round.green_fee.toFixed(0)}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-red-400 text-right">
+                  - ¥ {round.green_fee.toFixed(0)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300 text-right">
-                  ¥{round.caddy_fee.toFixed(0)}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-red-400 text-right">
+                  - ¥ {round.caddy_fee.toFixed(0)}
                 </td>
                 <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium text-right ${
                   round.wagers > 0 ? 'text-golf-green' : round.wagers < 0 ? 'text-red-400' : 'text-gray-300'
                 }`}>
-                  {round.wagers > 0 ? '+' : ''}¥{round.wagers.toFixed(0)}
+                  {round.wagers >= 0 ? '+ ' : '- '}¥ {Math.abs(round.wagers).toFixed(0)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-100 text-right">
                   {round.score}

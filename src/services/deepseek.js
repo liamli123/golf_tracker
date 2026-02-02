@@ -24,6 +24,16 @@ export const extractGolfData = async (userInput) => {
   "score": number (golf score, null if not specified)
 }
 
+Course Name Recognition:
+- Home course: 牧马山 (recognize as "牧马山" if user says: mumashan, 牧马山, home course, home)
+- Other courses and their variations:
+  * 麓山: lushan, 麓山
+  * 青城山: qingchengshan, 青城山
+  * 观岭: guanling, 观岭
+  * 保利: baoli, 保利
+
+Always normalize course names to Chinese characters (牧马山, 麓山, 青城山, 观岭, 保利).
+
 If any information is missing or unclear, use null for that field. Today's date is ${new Date().toISOString().split('T')[0]}.`
           },
           {
