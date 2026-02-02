@@ -162,7 +162,7 @@ export default function ChatBox({ onSave }) {
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={mode === 'single' ? "Tell me about your golf round..." : "Paste multiple rounds (one per line)..."}
+              placeholder={mode === 'bulk' ? "Paste multiple rounds (one per line)..." : ""}
               className="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg focus:ring-2 focus:ring-golf-green focus:border-transparent resize-none text-gray-100 placeholder-gray-500"
               rows={mode === 'bulk' ? '10' : '4'}
               disabled={loading}
