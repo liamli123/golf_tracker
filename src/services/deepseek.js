@@ -52,11 +52,15 @@ If any information is missing or unclear, use null for that field. Today's date 
       throw new Error('AI returned invalid data format');
     }
 
+    // Auto-populate current time if not specified
+    const now = new Date();
+    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
     return {
       success: true,
       data: {
         date: extractedData.date || new Date().toISOString().split('T')[0],
-        time: extractedData.time || null,
+        time: extractedData.time || currentTime,
         course: extractedData.course || '',
         green_fee: extractedData.green_fee || 0,
         caddy_fee: extractedData.caddy_fee || 0,

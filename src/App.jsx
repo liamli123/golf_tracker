@@ -34,15 +34,15 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-dark-bg">
       <Header />
 
       {saveMessage && (
         <div className="container mx-auto px-4 mt-4">
-          <div className={`rounded-lg p-4 ${
+          <div className={`rounded-lg p-4 border ${
             saveMessage.type === 'success'
-              ? 'bg-green-100 border border-green-400 text-green-700'
-              : 'bg-red-100 border border-red-400 text-red-700'
+              ? 'bg-green-950/30 border-golf-green text-golf-lightgreen'
+              : 'bg-red-950/30 border-red-800 text-red-400'
           }`}>
             {saveMessage.text}
           </div>
@@ -55,10 +55,10 @@ function App() {
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-golf-green"></div>
-            <p className="mt-4 text-gray-600">Loading your rounds...</p>
+            <p className="mt-4 text-gray-400">Loading your rounds...</p>
           </div>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg">
+          <div className="bg-red-950/30 border border-red-800 text-red-400 px-6 py-4 rounded-lg">
             Error loading rounds: {error}
           </div>
         ) : (
@@ -69,7 +69,7 @@ function App() {
         )}
       </main>
 
-      <footer className="bg-gray-800 text-white py-6 mt-12">
+      <footer className="bg-dark-card border-t border-dark-border text-gray-400 py-6 mt-12">
         <div className="container mx-auto px-4 text-center">
           <p>Golf Tracker - Track your rounds with AI</p>
         </div>
