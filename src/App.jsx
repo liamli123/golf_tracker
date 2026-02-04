@@ -6,7 +6,7 @@ import RoundsTable from './components/RoundsTable';
 import { useRounds } from './hooks/useRounds';
 
 function App() {
-  const { rounds, loading, error, addNewRound, removeRound } = useRounds();
+  const { rounds, loading, error, addNewRound, removeRound, modifyRound } = useRounds();
   const [saveMessage, setSaveMessage] = useState(null);
 
   const handleSaveRound = async (data) => {
@@ -31,6 +31,18 @@ function App() {
         setTimeout(() => setSaveMessage(null), 5000);
       }
     }
+  };
+
+  const handleEditRound = async (roundId, data) => {
+    const result = await modifyRound(roundId, data);
+    if (result.success) {
+      setSaveMessage({ type: 'success', text: 'Round updated successfully!' });
+      setTimeout(() => setSaveMessage(null), 3000);
+    } else {
+      setSaveMessage({ type: 'error', text: `Error: ${result.error}` });
+      setTimeout(() => setSaveMessage(null), 5000);
+    }
+    return result;
   };
 
   return (
@@ -64,7 +76,7 @@ function App() {
         ) : (
           <>
             <Statistics rounds={rounds} />
-            <RoundsTable rounds={rounds} onDelete={handleDeleteRound} />
+            <RoundsTable rounds={rounds} onDelete={handleDeleteRound} onEdit={handleEditRound} />
           </>
         )}
       </main>
