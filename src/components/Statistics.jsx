@@ -108,7 +108,19 @@ export default function Statistics({ rounds }) {
       })
       .sort((a, b) => a.monthKey.localeCompare(b.monthKey));
 
+    // Compute cumulative totals for monthly data
+    let cumPnl = 0, cumWagers = 0, cumSpending = 0;
+    monthlyData.forEach(d => {
+      cumPnl += d.pnl;
+      cumWagers += d.wagers;
+      cumSpending += d.spending;
+      d.cumPnl = cumPnl;
+      d.cumWagers = cumWagers;
+      d.cumSpending = cumSpending;
+    });
+
     // Per-round data for single month view
+    let cumRoundPnl = 0, cumRoundWagers = 0, cumRoundSpending = 0;
     const perRoundData = filteredRounds
       .slice()
       .sort((a, b) => a.date - b.date)
@@ -117,11 +129,17 @@ export default function Statistics({ rounds }) {
         const total = Math.abs(r.wagers) + roundSpending;
         const wagersPercent = total > 0 ? (Math.abs(r.wagers) / total) * 100 : 0;
         const expensesPercent = total > 0 ? (roundSpending / total) * 100 : 0;
+        cumRoundPnl += r.wagers - roundSpending;
+        cumRoundWagers += r.wagers;
+        cumRoundSpending += roundSpending;
         return {
           date: format(r.date, 'MMM dd'),
           pnl: r.wagers - roundSpending,
           wagers: r.wagers,
           spending: roundSpending,
+          cumPnl: cumRoundPnl,
+          cumWagers: cumRoundWagers,
+          cumSpending: cumRoundSpending,
           wagersPercent: wagersPercent,
           expensesPercent: expensesPercent
         };
@@ -314,10 +332,10 @@ export default function Statistics({ rounds }) {
         {/* Charts - 2x2 Grid */}
         {(timePeriod === 'all' || timePeriod === 'ytd' ? stats.monthlyData.length > 0 : stats.perRoundData.length > 0) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* P&L Line Chart */}
+            {/* P&L Line Chart (Cumulative) */}
             <div className="pb-4">
               <h2 className="text-sm font-mono text-gray-300 mb-3">
-                {timePeriod === 'all' ? 'ALL-TIME P&L' : timePeriod === 'ytd' ? 'YTD P&L' : 'P&L BY ROUND'}
+                {timePeriod === 'all' ? 'CUMULATIVE P&L' : timePeriod === 'ytd' ? 'YTD CUMULATIVE P&L' : 'CUMULATIVE P&L'}
               </h2>
               <ResponsiveContainer width="100%" height={150}>
                 <LineChart data={timePeriod === 'all' || timePeriod === 'ytd' ? stats.monthlyData : stats.perRoundData}>
@@ -334,15 +352,15 @@ export default function Statistics({ rounds }) {
                     }}
                     formatter={(value) => `${value >= 0 ? '+ ' : '- '}¥ ${Math.abs(value).toFixed(0)}`}
                   />
-                  <Line type="monotone" dataKey="pnl" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', r: 3 }} />
+                  <Line type="monotone" dataKey="cumPnl" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', r: 3 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
 
-            {/* Wagers Line Chart */}
+            {/* Wagers Line Chart (Cumulative) */}
             <div className="pb-4">
               <h2 className="text-sm font-mono text-gray-300 mb-3">
-                {timePeriod === 'all' ? 'ALL-TIME WAGERS' : timePeriod === 'ytd' ? 'YTD WAGERS' : 'WAGERS BY ROUND'}
+                {timePeriod === 'all' ? 'CUMULATIVE WAGERS' : timePeriod === 'ytd' ? 'YTD CUMULATIVE WAGERS' : 'CUMULATIVE WAGERS'}
               </h2>
               <ResponsiveContainer width="100%" height={150}>
                 <LineChart data={timePeriod === 'all' || timePeriod === 'ytd' ? stats.monthlyData : stats.perRoundData}>
@@ -359,18 +377,18 @@ export default function Statistics({ rounds }) {
                     }}
                     formatter={(value) => `${value >= 0 ? '+ ' : '- '}¥ ${Math.abs(value).toFixed(0)}`}
                   />
-                  <Line type="monotone" dataKey="wagers" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', r: 3 }} />
+                  <Line type="monotone" dataKey="cumWagers" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', r: 3 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
 
-            {/* Expenses Bar Chart */}
+            {/* Expenses Line Chart (Cumulative) */}
             <div className="pb-4">
               <h2 className="text-sm font-mono text-gray-300 mb-3">
-                {timePeriod === 'all' ? 'ALL-TIME EXPENSES' : timePeriod === 'ytd' ? 'YTD EXPENSES' : 'EXPENSES BY ROUND'}
+                {timePeriod === 'all' ? 'CUMULATIVE EXPENSES' : timePeriod === 'ytd' ? 'YTD CUMULATIVE EXPENSES' : 'CUMULATIVE EXPENSES'}
               </h2>
               <ResponsiveContainer width="100%" height={150}>
-                <BarChart data={timePeriod === 'all' || timePeriod === 'ytd' ? stats.monthlyData : stats.perRoundData} barCategoryGap="20%">
+                <LineChart data={timePeriod === 'all' || timePeriod === 'ytd' ? stats.monthlyData : stats.perRoundData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1f1f1f" />
                   <XAxis dataKey={timePeriod === 'all' || timePeriod === 'ytd' ? "month" : "date"} stroke="#555555" style={{ fontSize: '11px' }} />
                   <YAxis stroke="#555555" style={{ fontSize: '11px' }} />
@@ -382,11 +400,10 @@ export default function Statistics({ rounds }) {
                       color: '#f3f4f6',
                       fontSize: '11px'
                     }}
-                    cursor={{ fill: 'transparent' }}
                     formatter={(value) => `- ¥ ${Math.abs(value).toFixed(0)}`}
                   />
-                  <Bar dataKey="spending" fill="#f87171" name="Expenses" barSize={30} />
-                </BarChart>
+                  <Line type="monotone" dataKey="cumSpending" stroke="#f87171" strokeWidth={2} dot={{ fill: '#f87171', r: 3 }} />
+                </LineChart>
               </ResponsiveContainer>
             </div>
 
