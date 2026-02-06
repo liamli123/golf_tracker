@@ -163,6 +163,11 @@ export default function Statistics({ rounds }) {
     };
   }, [filteredRounds]);
 
+  const chartData = timePeriod === 'all' || timePeriod === 'ytd' ? stats.monthlyData : stats.perRoundData;
+  const lastPoint = chartData.length > 0 ? chartData[chartData.length - 1] : null;
+  const pnlColor = lastPoint && lastPoint.cumPnl < 0 ? '#f87171' : '#10b981';
+  const wagersColor = lastPoint && lastPoint.cumWagers < 0 ? '#f87171' : '#10b981';
+
   if (rounds.length === 0) {
     return (
       <div className="bg-dark-card border border-dark-border rounded-lg p-8 mb-8">
@@ -352,7 +357,7 @@ export default function Statistics({ rounds }) {
                     }}
                     formatter={(value) => `${value >= 0 ? '+ ' : '- '}¥ ${Math.abs(value).toFixed(0)}`}
                   />
-                  <Line type="monotone" dataKey="cumPnl" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', r: 3 }} />
+                  <Line type="monotone" dataKey="cumPnl" stroke={pnlColor} strokeWidth={2} dot={{ fill: pnlColor, r: 3 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -377,7 +382,7 @@ export default function Statistics({ rounds }) {
                     }}
                     formatter={(value) => `${value >= 0 ? '+ ' : '- '}¥ ${Math.abs(value).toFixed(0)}`}
                   />
-                  <Line type="monotone" dataKey="cumWagers" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981', r: 3 }} />
+                  <Line type="monotone" dataKey="cumWagers" stroke={wagersColor} strokeWidth={2} dot={{ fill: wagersColor, r: 3 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
